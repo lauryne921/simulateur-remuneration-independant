@@ -1,5 +1,5 @@
-import Engine, { formatValue } from "./node_modules/publicodes/dist/index.js";
-import rules from "./node_modules/modele-social/dist/index.js";
+import Engine, { formatValue } from "publicodes";
+import rules from "modele-social";
 
 const engine = new Engine(rules);
 
