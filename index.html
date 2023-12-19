@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Simulateur Rémunération</title>
+</head>
+<body>
+    <main>
+        <h1>Simulateur rémunération des indépendants</h1>
+        <section id="simulator">
+            <section class="margin-bottom-20">
+                <fieldset class="display-column">
+                    <legend class="bold">Questions posées</legend>
+                    <div class="margin-bottom-20">
+                        <label for="turnover">Chiffre d'affaires (annuel)</label>
+                        <input type="number" name="turnover" id="turnover">
+                    </div>
+                    <div class="margin-bottom-20">
+                        <label for="cost">Charges (annuelles)</label>
+                        <input type="number" name="cost" id="cost" value="0">
+                    </div>
+                    <div class="margin-bottom-20">
+                        <label for="select-situation">Situation Familiale</label>
+                        <select name="situation" id="select-situation">
+                            <option value="célibataire">Divorcé / Célibataire</option>
+                            <option value="couple">Marié / Pacsé</option>
+                            <option value="veuf">Veuf</option>
+                        </select>
+                    </div>
+                    <div class="margin-bottom-20">
+                        <label for="child">Nombre d'enfants à charge dans le foyer</label>
+                        <input type="number" name="child" id="child" step="1" value="0">
+                    </div>
+                    <div class="margin-bottom-20">
+                        <label for="household-income">Revenu imposable du foyer fiscal (hormis vous)</label>
+                        <input type="number" name="household-income" id="household-income" value="0">
+                    </div>
+                    <button id="calcul-btn">Valider</button>
+                </fieldset>
+            </section>
+    
+            <section class="margin-bottom-20">
+                <fieldset class="display-column">
+                    <legend class="bold">Output Général</legend>
+                    <p>Nombre de parts : <span id="parts"></span></p>
+                    <p>Quotient Familial : <span id="quotient"></span></p>
+                </fieldset>
+            </section>
+    
+            <section class="margin-bottom-20" id="eurl">
+                <fieldset class="display-column">
+                    <legend class="bold">Output EURL</legend>
+                    <p>Votre chiffre d'affaires : <span class="turnover-text"></span> € / an</p>
+                    <p>Vos charges : <span class="cost-text"></span> € / an</p>
+                    <p>Votre chiffres d'affaires comprenant vos charges : <span class="turnover-cost"></span> € / an</p>
+    
+                    <div>
+                        <p class="total-category">Vos cotisations et contributions : <span class="contributions-total"></span></p>
+                        <div>
+                            <p>cotisations : <span class="contributions"></span></p>
+                            <div class="tab">
+                                <p>Maladie : <span class="disease"></span></p>
+                                <p>Retraite de base : <span class="base-retirement"></span></p>
+                                <p>Retraite complémentaire : <span class="additional-retirement"></span></p>
+                                <p>Indemnités journalières maladie : <span class="disease-allowance"></span></p>
+                                <p>Invalidité et décès : <span class="disability"></span></p>
+                            </div>
+                        </div>
+    
+                        <p>CSG - CRDS : <span class="csg"></span></p>
+                        <p>Formation professionnelle : <span class="formation"></span></p>
+                    </div>
+    
+                    <p class="total-category">Votre rémunération nette : <span class="net"></span></p>
+    
+                    <div class="tax-container margin-bottom-20">
+                        <fieldset>
+                            <legend class="bold">IS</legend>
+                            <fieldset style="height: auto;">
+                                <legend>Impôt</legend>
+                                <p>Vos impôts (à l'IS) : <span class="tax"></span></p>
+                                <p>Votre revenu après impôts : <span class="after-tax"></span></p>
+                            </fieldset>
+                            <fieldset style="height: auto; display: none;" class="single-parent-tax-container">
+                                <legend>Impôt si parent isolé</legend>
+                                <p>Vos impôts (à l'IS) : <span class="tax-single-parent"></span></p>
+                                <p>Votre revenu après impôts : <span class="after-tax-single-parent"></span></p>
+                            </fieldset>
+                        </fieldset>
+                        <fieldset>
+                            <legend class="bold">IR</legend>
+                            <fieldset style="height: auto;">
+                                <legend>Impôt</legend>
+                                <p>Vos impôts (à l'IR) : <span class="tax-ir"></span></p>
+                                <p>Votre revenu après impôts : <span class="after-tax-ir"></span></p>
+                            </fieldset>
+                            <fieldset style="height: auto; display: none;" class="single-parent-tax-container">
+                                <legend>Impôt si parent isolé</legend>
+                                <p>Vos impôts (à l'IR) : <span class="tax-ir-single-parent"></span></p>
+                                <p>Votre revenu après impôts : <span class="after-tax-ir-single-parent"></span></p>
+                            </fieldset>
+                        </fieldset>
+                    </div>
+                    <div>
+                        <p>Retraite : </p>
+                        <div class="tab">
+                            <p>Trimestres acquis sur l'année : <span class="gain-trimester"></span> trimestres acquis</p>
+                            <p>Revenu cotisé pris en compte pour la retraite de base : <span class="pension-scheme"></span> € / an</p>
+                            <p>Points de retraite complémentaire acquis : <span class="retirement-points"></span> points acquis</p>
+                        </div>
+                    </div>
+                </fieldset>
+            </section>
+    
+            <section class="margin-bottom-20" id="sasu">
+                <fieldset class="display-column">
+                    <legend class="bold">Output SASU (assimilé-salarié)</legend>
+                    <p>Votre chiffre d'affaires : <span class="turnover-text"></span> € / an</p>
+                    <p>Vos charges : <span class="cost-text"></span> € / an</p>
+    
+                    <p class="total-category">Votre rémunération brute : <span class="gross"></span></p>
+    
+                    <div>
+                        <p class="total-category">Vos cotisations et contributions : <span class="contributions-total"></span></p>
+                        <div>
+                            <p>Part employeur : <span class="contributions"></span></p>
+                            <div class="tab employer">
+                                <p>Maladie : <span class="disease"></span></p>
+                                <p>Contribution solidarité autonomie : <span class="solidarity-autonomy"></span></p>
+                                <p>Accidents du travail et maladies professionnelles : <span class="work-accident"></span></p>
+                                <p>Vieillesse : <span class="old-age"></span></p>
+                                <p>Retraite complémentaire : <span class="additional-retirement"></span></p>
+                                <p>Contribution d'équilibre général : <span class="general-balance"></span></p>
+                                <p>Allocations familiales : <span class="family-allowance"></span></p>
+                                <p>Contribution au Fonds National d'Aide au Logement : <span class="fnal"></span></p>
+                                <p>Formation professionnelle : <span class="formation"></span></p>
+                                <p>Taxe d'apprentissage : <span class="learning-tax"></span></p>
+                                <p>Prévoyances complémentaires : <span class="additional-planning"></span></p>
+                            </div>
+                            <p>Part salarié : <span class="contributions"></span></p>
+                            <div class="tab employee">
+                                <p>Vieillesse : <span class="old-age"></span></p>
+                                <p>Retraite complémentaire : <span class="additional-retirement"></span></p>
+                                <p>Contribution d'équilibre général : <span class="general-balance"></span></p>
+                                <p>CSG - CRDS : <span class="csg-crds"></span></p>
+                                <p>Prévoyances complémentaires : <span class="additional-planning"></span></p>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <p class="total-category">Salaire net : <span class="net"></span></p>
+
+                    <div class="tax-container margin-bottom-20">
+                        <fieldset class="single-parent-tax-container" style="display: none;">
+                            <legend class="bold">Impôt si parent isolé</legend>
+                            <p>Vos impôts : <span class="tax-single-parent"></span></p>
+    
+                            <p>Votre revenu après impôts : <span class="after-tax-single-parent"></span></p>
+                        </fieldset>
+                        <fieldset>
+                            <legend class="bold">Impôt</legend>
+                            <p>Vos impôts : <span class="tax"></span></p>
+    
+                            <p>Votre revenu après impôts : <span class="after-tax"></span></p>
+                        </fieldset>
+                    </div>
+                    <div>
+                        <p>Retraite : </p>
+                        <div class="tab">
+                            <p>Retraite de base maximum : <span class="retirement-max"></span></p>
+                            <p>Retraite complémentaire : <span class="additional-retirement-total"></span></p>
+                        </div>
+                    </div>
+                </fieldset>
+            </section>
+
+            <section class="margin-bottom-20" style="display: none;" id="micro">
+                <fieldset class="display-column">
+                    <legend class="bold">Output Micro</legend>
+                    <p>Votre chiffre d'affaires : <span class="turnover-text"></span> € / an</p>
+                    <p>Vos charges : <span class="cost-text"></span> € / an</p>
+    
+                    <div>
+                        <p class="total-category">Vos cotisations et contributions : <span class="contributions-total"></span></p>
+                        <div>
+                            <p>Cotisations : <span class="contributions"></span></p>
+                            <p>Taxes pour frais de chambre : <span class="room-tax"></span></p>
+                            <p>Contribution à la formation professionnelle : <span class="formation"></span></p>
+                        </div>
+                    </div>
+    
+                    <p class="total-category">Revenu net : <span class="net"></span></p>
+
+                    <div class="tax-container">
+                        <fieldset>
+                            <legend class="bold">Sans versement libératoire</legend>
+                            <div>
+                                <fieldset>
+                                    <legend>Impôt</legend>
+                                    <p>Vos impôts : <span class="tax"></span></p>
+                                    <p>Votre revenu après impôts : <span class="after-tax"></span></p>
+                                </fieldset>
+                                <fieldset class="single-parent-tax-container" style="display: none;">
+                                    <legend>Impôt si parent isolé</legend>
+                                    <p>Vos impôts : <span class="tax-single-parent"></span></p>
+                                    <p>Votre revenu après impôts : <span class="after-tax-single-parent"></span></p>
+                                </fieldset>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <legend class="bold">Avec versement libératoire</legend>
+                            <p>Vos impôts : <span class="tax-payment-discharge"></span></p>
+                            <p>Votre revenu après impôts : <span class="after-tax-payment-discharge"></span></p>
+                        </fieldset>
+                    </div>
+                </fieldset>
+            </section>
+
+            <section class="margin-bottom-20" id="ei">
+                <fieldset class="display-column">
+                    <legend class="bold">Output EI</legend>
+                    <p>Votre chiffre d'affaires : <span class="turnover-text"></span> € / an</p>
+                    <p>Vos charges : <span class="cost-text"></span> € / an</p>
+    
+                    <div>
+                        <p class="total-category">Vos cotisations et contributions : <span class="contributions-total"></span></p>
+                        <div>
+                            <p>cotisations : <span class="contributions"></span></p>
+                            <div class="tab">
+                                <p>Maladie : <span class="disease"></span></p>
+                                <p>Retraite de base : <span class="base-retirement"></span></p>
+                                <p>Retraite complémentaire : <span class="additional-retirement"></span></p>
+                                <p>Indemnités journalières maladie : <span class="disease-allowance"></span></p>
+                                <p>Invalidité et décès : <span class="disability"></span></p>
+                            </div>
+                        </div>
+    
+                        <p>CSG - CRDS : <span class="csg"></span></p>
+                        <p>Formation professionnelle : <span class="formation"></span></p>
+                    </div>
+    
+                    <p class="total-category">Votre rémunération nette : <span class="net"></span></p>
+    
+                    <div class="tax-container margin-bottom-20">
+                        <fieldset>
+                            <legend class="bold">IS</legend>
+                            <fieldset style="height: auto;">
+                                <legend>Impôt</legend>
+                                <p>Vos impôts (à l'IS) : <span class="tax"></span></p>
+                                <p>Votre revenu après impôts : <span class="after-tax"></span></p>
+                            </fieldset>
+                            <fieldset style="height: auto; display: none;" class="single-parent-tax-container">
+                                <legend>Impôt si parent isolé</legend>
+                                <p>Vos impôts (à l'IS) : <span class="tax-single-parent"></span></p>
+                                <p>Votre revenu après impôts : <span class="after-tax-single-parent"></span></p>
+                            </fieldset>
+                        </fieldset>
+                        <fieldset>
+                            <legend class="bold">IR</legend>
+                            <fieldset style="height: auto;">
+                                <legend>Impôt</legend>
+                                <p>Vos impôts (à l'IR) : <span class="tax-ir"></span></p>
+                                <p>Votre revenu après impôts : <span class="after-tax-ir"></span></p>
+                            </fieldset>
+                            <fieldset style="height: auto; display: none;" class="single-parent-tax-container">
+                                <legend>Impôt si parent isolé</legend>
+                                <p>Vos impôts (à l'IR) : <span class="tax-ir-single-parent"></span></p>
+                                <p>Votre revenu après impôts : <span class="after-tax-ir-single-parent"></span></p>
+                            </fieldset>
+                        </fieldset>
+                    </div>
+                    <div>
+                        <p>Retraite : </p>
+                        <div class="tab">
+                            <p>Trimestres acquis sur l'année : <span class="gain-trimester"></span> trimestres acquis</p>
+                            <p>Revenu cotisé pris en compte pour la retraite de base : <span class="pension-scheme"></span> € / an</p>
+                            <p>Points de retraite complémentaire acquis : <span class="retirement-points"></span> points acquis</p>
+                        </div>
+                    </div>
+                </fieldset>
+            </section>
+        </section>
+    </main>
+    <script type="module" src="script.js"></script>
+</body>
+</html>
